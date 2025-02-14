@@ -1,0 +1,14 @@
+name = "DataKit"
+uuid = "4549d3a2-7322-4a49-ae93-49a40df857c4"
+authors = ["Anand Bisen <asbisen@icloud.com>"]
+version = "0.1.0"
+
+[deps]
+DBInterface = "a10d1c49-ce27-4219-8d33-6db1a4562965"
+DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
+DuckDB = "d2f5444f-75bc-4fdf-ac35-56f514c445e1"
+
+[compat]
+DBInterface = "2.6.1"
+DataFrames = "1.7.0"
+DuckDB = "1.2.0"
