@@ -67,7 +67,7 @@ Returns empty DataFrame if database not connected.
 DataFrame containing query results
 """
 function querydf(db::DDB, query::String)::DataFrame
-    isconnected(db) || return DataFrame()
+    isconnected(db) || connect_database!(db)
     con = connect(db.db)
     df = execute(con, query) |> DataFrame
     close!(con)
