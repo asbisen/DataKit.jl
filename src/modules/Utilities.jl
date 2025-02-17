@@ -10,27 +10,63 @@ export download_file
                  local_target::AbstractString=auto_filename(remote_url);
                  overwrite::Bool=false,
                  verify_checksum::Union{String,Nothing}=nothing,
-                 create_dirs::Bool=true,
-                 progress::Bool=true) -> String
+                 create_dirs::Bool=true) -> String
 
 Downloads a file from a remote URL with additional functionality for data analysis workflows.
+The function supports both direct file paths and directory paths as the download target.
 
-Arguments:
+# Arguments
 - `remote_url`: The URL to download from
-- `local_target`: Local path to save the file (optional, inferred from URL if not provided)
-- `overwrite`: Whether to overwrite existing files
-- `verify_checksum`: SHA256 checksum to verify file integrity
-- `create_dirs`: Create necessary directories in the path
-- `progress`: Show download progress
+- `local_target`: Local path to save the file. Can be either a specific filename or a directory path
+- `overwrite`: Whether to overwrite existing files (default: false)
+- `verify_checksum`: SHA256 checksum to verify file integrity (default: nothing)
+- `create_dirs`: Create necessary directories in the path (default: true)
 
-Returns:
-- Path to the downloaded file
+# Returns
+- Path to the downloaded file as a string
+
+# Examples
+Download with a specific filename:
+```julia
+# Will save as "myfile.csv" in the specified path
+download_file("https://example.com/data.csv", "local/path/myfile.csv")
+```
+
+Download into a directory (filename derived from URL):
+```julia
+# Both will save as "data.csv" in the specified directory
+download_file("https://example.com/data.csv", "local/path/")
+download_file("https://example.com/data.csv", "local/path")
+```
+
+Download with checksum verification:
+```julia
+download_file("https://example.com/data.csv", "data.csv",
+             verify_checksum="abc123...") # SHA256 hash
+```
+
+# Notes
+- If `local_target` is a directory path, the filename will be automatically derived from the URL
+- Directories in the path will be created automatically unless `create_dirs=false`
+- Existing files won't be overwritten unless `overwrite=true`
+- Progress is displayed during download
+- Throws an error if the download fails or if checksum verification fails
 """
 function download_file(remote_url::AbstractString,
     local_target::AbstractString=auto_filename(remote_url);
     overwrite::Bool=false,
     verify_checksum::Union{String,Nothing}=nothing,
     create_dirs::Bool=true)
+
+    # If local_target is a directory, append auto-generated filename
+    if isdir(local_target) || endswith(local_target, '/') || endswith(local_target, '\\')
+        # Ensure the path ends with a directory separator
+        dir_path = rstrip(local_target, ['/', '\\']) * '/'
+        # Generate filename from URL
+        filename = auto_filename(remote_url)
+        # Combine directory path with filename
+        local_target = joinpath(dir_path, filename)
+    end
 
     # Create directories if needed
     if create_dirs
