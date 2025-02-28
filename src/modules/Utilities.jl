@@ -3,7 +3,7 @@ module Utilities
 using Downloads
 using SHA
 
-export download_file
+export download_file, auto_filename
 
 """
     download_file(remote_url::AbstractString,
